@@ -3,7 +3,7 @@
 /.idea
 **/**/node_modules/
 .cache
-
+.env
 # yarn is the recommended package manager across the project
 **/**/.package-lock.json
 
