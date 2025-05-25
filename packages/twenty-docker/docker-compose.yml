@@ -7,8 +7,8 @@ services:
       - coolify-net
     volumes:
       - server-local-data:/app/packages/twenty-server/.local-storage
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     environment:
       NODE_PORT: 3000
       PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/default
@@ -44,7 +44,13 @@ services:
       EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-465}
       EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
       EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
-
+    labels:
+      - traefik.enable=true
+      - 'traefik.http.routers.twenty.rule=Host("twenty.biocentra.eu")'
+      - traefik.http.routers.twenty.entrypoints=https
+      - traefik.http.routers.twenty.tls=true
+      - traefik.http.routers.twenty.tls.certresolver=letsencrypt
+      - traefik.http.services.twenty.loadbalancer.server.port=3000
     depends_on:
       db:
         condition: service_healthy
@@ -97,7 +103,7 @@ services:
       EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-465}
       EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
       EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
-
+    
     depends_on:
       db:
         condition: service_healthy
