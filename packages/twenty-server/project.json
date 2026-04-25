@@ -115,6 +115,14 @@
         "command": "node dist/command/command.js"
       }
     },
+    "auth:check:supabase-oidc": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "cwd": "packages/twenty-server",
+        "command": "node dist/engine/core-modules/auth/scripts/check-supabase-oidc.js"
+      }
+    },
     "worker": {
       "executor": "nx:run-commands",
       "dependsOn": ["^build"],
@@ -212,6 +220,14 @@
           "nx database:migrate -- --include-slow"
         ],
         "parallel": false
+      }
+    },
+    "database:check:supabase": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "cwd": "packages/twenty-server",
+        "command": "node dist/database/scripts/check-supabase-db-compatibility.js"
       }
     },
     "database:migrate:generate": {
