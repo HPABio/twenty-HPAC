@@ -559,10 +559,10 @@ services:
       METRICS_JWT_SECRET: ${JWT_SECRET}
       REGION: local
       ERL_AFLAGS: -proto_dist inet_tcp
-      POOLER_TENANT_ID: ${POOLER_TENANT_ID}
-      POOLER_DEFAULT_POOL_SIZE: ${POOLER_DEFAULT_POOL_SIZE}
-      POOLER_MAX_CLIENT_CONN: ${POOLER_MAX_CLIENT_CONN}
-      POOLER_POOL_MODE: transaction
+      #POOLER_TENANT_ID: ${POOLER_TENANT_ID}
+      #POOLER_DEFAULT_POOL_SIZE: ${POOLER_DEFAULT_POOL_SIZE}
+      #POOLER_MAX_CLIENT_CONN: ${POOLER_MAX_CLIENT_CONN}
+      #POOLER_POOL_MODE: transaction
     command:
       [
         "/bin/sh",
@@ -575,5 +575,5 @@ volumes:
 
 networks:
   supabase_network:
-    name: ${SUPABASE_DOCKER_NETWORK:-supabase_network}
+    name: supabase_network
     driver: bridge
