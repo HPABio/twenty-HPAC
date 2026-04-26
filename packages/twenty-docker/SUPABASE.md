@@ -76,6 +76,8 @@ docker compose \
 Set `SUPABASE_DOCKER_NETWORK` to the Docker network used by your Supabase
 compose project, and point `PG_DATABASE_URL` at the Supabase Postgres service on
 that network, for example `postgresql://postgres:password@db:5432/postgres`.
+Find the network with `docker network ls`; self-hosted Supabase networks often
+look like `supabase_network_<project-name>`.
 
 ## Migrating Existing Twenty Data
 

@@ -102,7 +102,7 @@ services:
 networks:
   supabase:
     external: true
-    name: ${SUPABASE_DOCKER_NETWORK:-supabase_default}
+    name: ${SUPABASE_DOCKER_NETWORK:?Set SUPABASE_DOCKER_NETWORK to the existing Supabase Docker network name}
 
 volumes:
   server-local-data:
