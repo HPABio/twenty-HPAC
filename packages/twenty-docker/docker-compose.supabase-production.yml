@@ -48,7 +48,6 @@ services:
       retries: 20
     restart: always
     networks:
-      - default
       - supabase_network
 
   twenty-worker:
@@ -86,7 +85,6 @@ services:
         condition: service_healthy
     restart: always
     networks:
-      - default
       - supabase_network
 
   redis:
@@ -99,10 +97,11 @@ services:
       timeout: 5s
       retries: 10
 
-networks:
-  supabase_network:
-    external: true
-    name: ${SUPABASE_DOCKER_NETWORK:?Set SUPABASE_DOCKER_NETWORK to the existing Supabase Docker network name}
 
-volumes:
-  server-local-data:
+  volumes:
+    server-local-data:
+
+  networks:
+    supabase_network:
+      external: true
+      name: ${SUPABASE_DOCKER_NETWORK:-supabase_network}
