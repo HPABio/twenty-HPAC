@@ -503,3 +503,5 @@ const main = () => {
   moduleIndexFiles.forEach(createTypeScriptFile);
 };
 main();
+// @prettier/sync may leave an idle handle open under newer Node versions.
+process.exit(0);

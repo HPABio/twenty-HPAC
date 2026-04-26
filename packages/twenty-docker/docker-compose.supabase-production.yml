@@ -14,7 +14,7 @@ services:
       - "3000"
     environment:
       NODE_PORT: 3000
-      PG_DATABASE_URL: ${PG_DATABASE_URL}
+      PG_DATABASE_URL: postgresql://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:?Set PG_DATABASE_PASSWORD to the Supabase Postgres password}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
       SERVER_URL: ${SERVER_URL}
       PUBLIC_DOMAIN_URL: ${PUBLIC_DOMAIN_URL:-}
@@ -49,7 +49,6 @@ services:
     restart: always
     networks:
       - default
-      #- supabase_network_linkedin-data-insights
       - supabase_network
 
   twenty-worker:
@@ -58,7 +57,7 @@ services:
       - server-local-data:/app/packages/twenty-server/.local-storage
     command: ["yarn", "worker:prod"]
     environment:
-      PG_DATABASE_URL: ${PG_DATABASE_URL}
+      PG_DATABASE_URL: postgresql://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:?Set PG_DATABASE_PASSWORD to the Supabase Postgres password}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
       SERVER_URL: ${SERVER_URL}
       PUBLIC_DOMAIN_URL: ${PUBLIC_DOMAIN_URL:-}
@@ -88,7 +87,6 @@ services:
     restart: always
     networks:
       - default
-      #- supabase_network_linkedin-data-insights
       - supabase_network
 
   redis:
