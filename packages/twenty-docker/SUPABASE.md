@@ -68,7 +68,6 @@ cp packages/twenty-docker/.env.supabase.production.example \
   packages/twenty-docker/.env.supabase.production
 
 docker compose \
-  -f packages/twenty-docker/docker-compose.yml \
   -f packages/twenty-docker/docker-compose.supabase-production.yml \
   --env-file packages/twenty-docker/.env.supabase.production \
   up -d twenty-server twenty-worker redis

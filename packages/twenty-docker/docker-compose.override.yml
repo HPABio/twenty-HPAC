@@ -5,7 +5,7 @@ name: twenty-dev
 
 services:
   twenty-server:
-    ports:
+    ports: !override
       - "127.0.0.1:${TWENTY_HOST_PORT:-3000}:3000"
     environment:
       PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@db:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-default}
@@ -24,7 +24,7 @@ services:
       STORAGE_TYPE: ${STORAGE_TYPE:-local}
 
   db:
-    ports:
+    ports: !override
       - "127.0.0.1:${PG_DATABASE_PORT:-5432}:5432"
     environment:
       POSTGRES_DB: ${PG_DATABASE_NAME:-default}
@@ -33,5 +33,5 @@ services:
 
   redis:
     image: redis:7
-    ports:
+    ports: !override
       - "127.0.0.1:${REDIS_PORT:-6379}:6379"

@@ -2,6 +2,8 @@ name: twenty
 
 services:
   twenty-server:
+    ports: !override
+      - "127.0.0.1:${TWENTY_HOST_PORT:-3000}:3000"
     environment:
       PG_DATABASE_URL: ${PG_DATABASE_URL}
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}

@@ -130,9 +130,9 @@ else
   # Check if port is listening
   echo "Waiting for server to be healthy, it might take a few minutes while we initialize the database..."
   # Tail logs of the server until it's ready
-  docker compose logs -f server &
+  docker compose logs -f twenty-server &
   pid=$!
-  while [ ! $(docker inspect --format='{{.State.Health.Status}}' twenty-server-1) = "healthy" ]; do
+  while [ "$(docker inspect --format='{{.State.Health.Status}}' "$(docker compose ps -q twenty-server)")" != "healthy" ]; do
     sleep 1
   done
   kill $pid
