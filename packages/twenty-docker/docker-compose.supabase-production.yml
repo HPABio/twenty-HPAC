@@ -50,7 +50,7 @@ services:
     networks:
       - default
       #- supabase_network_linkedin-data-insights
-      - supabase
+      - supabase_network
 
   twenty-worker:
     image: twentycrm/twenty:${TAG:-latest}
@@ -89,7 +89,7 @@ services:
     networks:
       - default
       #- supabase_network_linkedin-data-insights
-      - supabase
+      - supabase_network
 
   redis:
     image: redis:7
@@ -102,7 +102,7 @@ services:
       retries: 10
 
 networks:
-  supabase:
+  supabase_network:
     external: true
     name: ${SUPABASE_DOCKER_NETWORK:?Set SUPABASE_DOCKER_NETWORK to the existing Supabase Docker network name}
 
