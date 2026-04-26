@@ -1,0 +1,8 @@
+# Supabase-side override used when Twenty runs in a separate Compose project.
+# Add this file to the Supabase compose command, or copy this `networks`
+# section into the Supabase compose file.
+
+networks:
+  default:
+    name: ${SUPABASE_DOCKER_NETWORK:?Set SUPABASE_DOCKER_NETWORK to a stable shared Docker network name}
+    driver: bridge

@@ -79,6 +79,29 @@ that network, for example `postgresql://postgres:password@db:5432/postgres`.
 Find the network with `docker network ls`; self-hosted Supabase networks often
 look like `supabase_network_<project-name>`.
 
+If you control the Supabase compose file, make that network name explicit so it
+does not change between deployments:
+
+```yaml
+networks:
+  default:
+    name: ${SUPABASE_DOCKER_NETWORK}
+    driver: bridge
+```
+
+You can also add the provided override when starting Supabase:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f packages/twenty-docker/supabase/docker-compose.network.yml \
+  --env-file .env.supabase.production \
+  up -d
+```
+
+Use the same `SUPABASE_DOCKER_NETWORK` value in both the Supabase env and
+Twenty production env.
+
 ## Migrating Existing Twenty Data
 
 Stop writes to the current Twenty database before exporting.
