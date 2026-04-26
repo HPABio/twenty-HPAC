@@ -1,0 +1,37 @@
+# Auto-loaded by `docker compose up` for local IDE development.
+# Production deploys should pass explicit `-f` files so this override is skipped.
+
+name: twenty-dev
+
+services:
+  server:
+    ports:
+      - "127.0.0.1:${TWENTY_HOST_PORT:-3000}:3000"
+    environment:
+      PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@db:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-default}
+      SERVER_URL: ${SERVER_URL:-http://localhost:3000}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      APP_SECRET: ${APP_SECRET:-dev_secret_not_for_production}
+      STORAGE_TYPE: ${STORAGE_TYPE:-local}
+      SIGN_IN_PREFILLED: ${SIGN_IN_PREFILLED:-true}
+
+  worker:
+    environment:
+      PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@db:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-default}
+      SERVER_URL: ${SERVER_URL:-http://localhost:3000}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      APP_SECRET: ${APP_SECRET:-dev_secret_not_for_production}
+      STORAGE_TYPE: ${STORAGE_TYPE:-local}
+
+  db:
+    ports:
+      - "127.0.0.1:${PG_DATABASE_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: ${PG_DATABASE_NAME:-default}
+      POSTGRES_PASSWORD: ${PG_DATABASE_PASSWORD:-postgres}
+      POSTGRES_USER: ${PG_DATABASE_USER:-postgres}
+
+  redis:
+    image: redis:7
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"

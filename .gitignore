@@ -1,4 +1,6 @@
 **/**/.env
+!packages/twenty-docker/.env.supabase.example
+!packages/twenty-docker/.env.supabase.production.example
 .DS_Store
 /.idea
 .claude/

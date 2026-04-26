@@ -59,6 +59,25 @@ docker compose \
   up server worker redis
 ```
 
+For a VPS where Twenty and Supabase run on the same server, attach Twenty to
+Supabase's Docker network and keep Twenty bound to localhost behind your reverse
+proxy:
+
+```bash
+cp packages/twenty-docker/.env.supabase.production.example \
+  packages/twenty-docker/.env.supabase.production
+
+docker compose \
+  -f packages/twenty-docker/docker-compose.yml \
+  -f packages/twenty-docker/docker-compose.supabase-production.yml \
+  --env-file packages/twenty-docker/.env.supabase.production \
+  up -d server worker redis
+```
+
+Set `SUPABASE_DOCKER_NETWORK` to the Docker network used by your Supabase
+compose project, and point `PG_DATABASE_URL` at the Supabase Postgres service on
+that network, for example `postgresql://postgres:password@db:5432/postgres`.
+
 ## Migrating Existing Twenty Data
 
 Stop writes to the current Twenty database before exporting.
