@@ -187,7 +187,7 @@ services:
     networks:
       - supabase_network
     environment:
-      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@db:54322/${POSTGRES_DB}
+      PGRST_DB_URI: postgres://authenticator:hostingerPW2026??@db:54322/postgres
       PGRST_DB_SCHEMAS: ${PGRST_DB_SCHEMAS}
       PGRST_DB_ANON_ROLE: anon
       PGRST_JWT_SECRET: ${JWT_SECRET}
@@ -234,8 +234,8 @@ services:
       DB_HOST: db
       DB_PORT: 54322
       DB_USER: supabase_admin
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
-      DB_NAME: ${POSTGRES_DB}
+      DB_PASSWORD: hostingerPW2026??
+      DB_NAME: postgres
       DB_AFTER_CONNECT_QUERY: 'SET search_path TO _realtime'
       DB_ENC_KEY: supabaserealtime
       API_JWT_SECRET: ${JWT_SECRET}
@@ -283,7 +283,7 @@ services:
       SERVICE_KEY: ${SERVICE_ROLE_KEY}
       POSTGREST_URL: http://rest:54322
       PGRST_JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@db:54322/${POSTGRES_DB}
+      DATABASE_URL: postgres://supabase_storage_admin:hostingerPW2026??@db:54322/postgres
       FILE_SIZE_LIMIT: 52428800
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
@@ -358,7 +358,7 @@ services:
       SUPABASE_URL: http://kong:8000
       SUPABASE_ANON_KEY: ${ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
-      SUPABASE_DB_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:54322/postgres
+      SUPABASE_DB_URL: postgresql://postgres:hostingerPW2026??@db:54322/postgres
       # TODO: Allow configuring VERIFY_JWT per function. This PR might help: https://github.com/supabase/cli/pull/786
       VERIFY_JWT: "${FUNCTIONS_VERIFY_JWT}"
     command:
@@ -375,7 +375,7 @@ services:
     ports:
       - 54320:54320
     expose:
-     - 54320
+      - 54320
   #  Uncomment to use Big Query backend for analytics
     volumes:
       - type: bind
@@ -405,7 +405,7 @@ services:
       DB_DATABASE: _supabase
       DB_HOSTNAME: db
       DB_PORT: 54322
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PASSWORD: hostingerPW2026??
       DB_SCHEMA: _analytics
       LOGFLARE_API_KEY: ${LOGFLARE_API_KEY}
       LOGFLARE_SINGLE_TENANT: true
@@ -413,7 +413,7 @@ services:
       LOGFLARE_MIN_CLUSTER_SIZE: 1
 
       # Comment variables to use Big Query backend for analytics
-      POSTGRES_BACKEND_URL: postgresql://supabase_admin:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:54322/_supabase
+      POSTGRES_BACKEND_URL: postgresql://supabase_admin:hostingerPW2026??@db:54322/_supabase
       POSTGRES_BACKEND_SCHEMA: _analytics
       LOGFLARE_FEATURE_FLAG_OVERRIDE: multibackend=true
       # Uncomment to use Big Query backend for analytics
@@ -539,10 +539,10 @@ services:
       timeout: 5s
       retries: 5
     depends_on:
-      db:
-        condition: service_healthy
-      analytics:
-        condition: service_healthy
+      # db:
+      #   condition: service_healthy
+      # analytics:
+      #   condition: service_healthy
 
     networks:
       - supabase_network
@@ -550,8 +550,8 @@ services:
       PORT: 54320
       POSTGRES_PORT: 54322
       POSTGRES_DB: _supabase
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      DATABASE_URL: ecto://supabase_admin:${POSTGRES_PASSWORD}@db:54322/_supabase
+      POSTGRES_PASSWORD: hostingerPW2026??
+      DATABASE_URL: ecto://supabase_admin:hostingerPW2026??@db:54322/_supabase
       CLUSTER_POSTGRES: true
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
       VAULT_ENC_KEY: ${VAULT_ENC_KEY}
@@ -560,7 +560,7 @@ services:
       REGION: local
       ERL_AFLAGS: -proto_dist inet_tcp
       POOLER_TENANT_ID: ${POOLER_TENANT_ID}
-      POOLER_DEFAULT_POOL_SIZE: ${POOLER_DEFAULT_POOL_SIZE}
+      POOLER_DEFAULT_POOL_SIZE:
       POOLER_MAX_CLIENT_CONN: ${POOLER_MAX_CLIENT_CONN}
       POOLER_POOL_MODE: transaction
     command:
