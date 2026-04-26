@@ -1,7 +1,7 @@
 # Production override for deploying Twenty on the same VPS as Supabase.
 # Attach Twenty to Supabase's Docker network and use the Supabase Postgres
 # service name in PG_DATABASE_URL, for example:
-# postgresql://postgres:<password>@db:5432/postgres
+# postgresql://postgres:<password>@db:54322/postgres
 
 name: twenty-production
 
@@ -11,10 +11,10 @@ services:
     volumes:
       - server-local-data:/app/packages/twenty-server/.local-storage
     expose:
-      - "3000"
+      - "54323"
     environment:
-      NODE_PORT: 3000
-      PG_DATABASE_URL: postgresql://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:?Set PG_DATABASE_PASSWORD to the Supabase Postgres password}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}
+      NODE_PORT: 54323
+      PG_DATABASE_URL: postgresql://postgres:hostingerPW2026??@db:54322/postgres
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
       SERVER_URL: ${SERVER_URL}
       PUBLIC_DOMAIN_URL: ${PUBLIC_DOMAIN_URL:-}
@@ -42,7 +42,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: curl --fail http://localhost:3000/healthz
+      test: curl --fail http://localhost:54323/healthz
       interval: 5s
       timeout: 5s
       retries: 20
@@ -56,7 +56,7 @@ services:
       - server-local-data:/app/packages/twenty-server/.local-storage
     command: ["yarn", "worker:prod"]
     environment:
-      PG_DATABASE_URL: postgresql://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:?Set PG_DATABASE_PASSWORD to the Supabase Postgres password}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}
+      PG_DATABASE_URL: postgresql://postgres:hostingerPW2026??@db:54322/postgres
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
       SERVER_URL: ${SERVER_URL}
       PUBLIC_DOMAIN_URL: ${PUBLIC_DOMAIN_URL:-}
@@ -100,4 +100,4 @@ services:
   networks:
     supabase_network:
       external: true
-      name: ${SUPABASE_DOCKER_NETWORK:-supabase_network}
+      name: supabase_network
