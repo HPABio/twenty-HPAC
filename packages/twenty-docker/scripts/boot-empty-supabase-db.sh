@@ -26,4 +26,4 @@ docker compose \
   -f packages/twenty-docker/docker-compose.yml \
   -f packages/twenty-docker/docker-compose.supabase-external.yml \
   --env-file "${env_file}" \
-  up server worker redis
+  up twenty-server twenty-worker redis

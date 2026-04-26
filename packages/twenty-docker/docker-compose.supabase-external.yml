@@ -1,7 +1,7 @@
 name: twenty
 
 services:
-  server:
+  twenty-server:
     environment:
       PG_DATABASE_URL: ${PG_DATABASE_URL}
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
@@ -13,7 +13,7 @@ services:
       redis:
         condition: service_healthy
 
-  worker:
+  twenty-worker:
     environment:
       PG_DATABASE_URL: ${PG_DATABASE_URL}
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
@@ -22,7 +22,7 @@ services:
       STORAGE_S3_PRESIGNED_URL_ENABLED: ${STORAGE_S3_PRESIGNED_URL_ENABLED:-false}
       STORAGE_S3_PRESIGNED_URL_BASE: ${STORAGE_S3_PRESIGNED_URL_BASE:-}
     depends_on: !override
-      server:
+      twenty-server:
         condition: service_healthy
 
   db:

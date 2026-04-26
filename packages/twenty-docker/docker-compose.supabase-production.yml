@@ -6,7 +6,7 @@
 name: twenty-production
 
 services:
-  server:
+  twenty-server:
     ports:
       - "127.0.0.1:${TWENTY_HOST_PORT:-3000}:3000"
     environment:
@@ -41,7 +41,7 @@ services:
       - default
       - supabase
 
-  worker:
+  twenty-worker:
     environment:
       PG_DATABASE_URL: ${PG_DATABASE_URL}
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
@@ -68,7 +68,7 @@ services:
       EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
       EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
     depends_on: !override
-      server:
+      twenty-server:
         condition: service_healthy
     networks:
       - default

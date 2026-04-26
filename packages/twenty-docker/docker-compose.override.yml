@@ -4,7 +4,7 @@
 name: twenty-dev
 
 services:
-  server:
+  twenty-server:
     ports:
       - "127.0.0.1:${TWENTY_HOST_PORT:-3000}:3000"
     environment:
@@ -15,7 +15,7 @@ services:
       STORAGE_TYPE: ${STORAGE_TYPE:-local}
       SIGN_IN_PREFILLED: ${SIGN_IN_PREFILLED:-true}
 
-  worker:
+  twenty-worker:
     environment:
       PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@db:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-default}
       SERVER_URL: ${SERVER_URL:-http://localhost:3000}

@@ -56,7 +56,7 @@ docker compose \
   -f packages/twenty-docker/docker-compose.yml \
   -f packages/twenty-docker/docker-compose.supabase-external.yml \
   --env-file packages/twenty-docker/.env.supabase \
-  up server worker redis
+  up twenty-server twenty-worker redis
 ```
 
 For a VPS where Twenty and Supabase run on the same server, attach Twenty to
@@ -71,7 +71,7 @@ docker compose \
   -f packages/twenty-docker/docker-compose.yml \
   -f packages/twenty-docker/docker-compose.supabase-production.yml \
   --env-file packages/twenty-docker/.env.supabase.production \
-  up -d server worker redis
+  up -d twenty-server twenty-worker redis
 ```
 
 Set `SUPABASE_DOCKER_NETWORK` to the Docker network used by your Supabase
