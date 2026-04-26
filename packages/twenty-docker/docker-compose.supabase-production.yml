@@ -97,10 +97,6 @@ services:
       timeout: 5s
       retries: 10
 
-
-  volumes:
-    server-local-data:
-
   networks:
     supabase_network:
       external: true
