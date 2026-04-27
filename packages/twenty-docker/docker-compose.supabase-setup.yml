@@ -478,8 +478,8 @@ services:
     image: timberio/vector:0.28.1-alpine
     restart: unless-stopped
     volumes:
+      - ${DOCKER_SOCKET_LOCATION}:/var/run/docker.sock:ro,z
       - ./supabase/volumes/logs/vector.yml:/etc/vector/vector.yml:ro,z
-      - ${DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}:/var/run/docker.sock:ro,z
     healthcheck:
       test:
         [
@@ -513,7 +513,7 @@ services:
     image: supabase/supavisor:2.5.1
     restart: unless-stopped
     ports: # expose supavisor to the host to enable db pooler connection
-      - 5432:5432
+      - 54320:54320
       - 6543:6543
     volumes:
       - ./supabase/volumes/pooler/pooler.exs:/etc/pooler/pooler.exs:ro,z
