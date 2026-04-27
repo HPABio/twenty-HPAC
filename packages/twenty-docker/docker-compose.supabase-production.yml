@@ -1,7 +1,8 @@
 # Production override for deploying Twenty on the same VPS as Supabase.
-# Attach Twenty to Supabase's Docker network and use the Supabase Postgres
-# service name in PG_DATABASE_URL, for example:
-# postgresql://postgres:<password>@db:54322/postgres
+# Attach Twenty to Supabase's Docker network and set PG_DATABASE_* so
+# PG_DATABASE_URL resolves to your Supabase Postgres on that network, e.g.
+# PG_DATABASE_USER=postgres, PG_DATABASE_HOST=db, PG_DATABASE_PORT=54322,
+# PG_DATABASE_NAME=postgres
 
 name: twenty-production
 
@@ -10,11 +11,11 @@ services:
     image: twentycrm/twenty:${TAG:-latest}
     volumes:
       - server-local-data:/app/packages/twenty-server/.local-storage
-    expose:
-      - "54323"
+    ports:
+      - "127.0.0.1:${TWENTY_HOST_PORT:-3000}:3000"
     environment:
-      NODE_PORT: 54323
-      PG_DATABASE_URL: postgresql://postgres:hostingerPW2026??@db:54322/postgres
+      NODE_PORT: ${NODE_PORT:-3000}
+      PG_DATABASE_URL: postgresql://${PG_DATABASE_USER}:${PG_DATABASE_PASSWORD}@${PG_DATABASE_HOST}:${PG_DATABASE_PORT}/${PG_DATABASE_NAME}
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
       SERVER_URL: ${SERVER_URL}
       PUBLIC_DOMAIN_URL: ${PUBLIC_DOMAIN_URL:-}
@@ -42,7 +43,8 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: curl --fail http://localhost:54323/healthz
+      test:
+        ['CMD-SHELL', 'curl --fail http://127.0.0.1:$$NODE_PORT/healthz']
       interval: 5s
       timeout: 5s
       retries: 20
@@ -54,16 +56,16 @@ services:
     image: twentycrm/twenty:${TAG:-latest}
     volumes:
       - server-local-data:/app/packages/twenty-server/.local-storage
-    command: ["yarn", "worker:prod"]
+    command: ['yarn', 'worker:prod']
     environment:
-      PG_DATABASE_URL: postgresql://postgres:hostingerPW2026??@db:54322/postgres
+      PG_DATABASE_URL: postgresql://${PG_DATABASE_USER}:${PG_DATABASE_PASSWORD}@${PG_DATABASE_HOST}:${PG_DATABASE_PORT}/${PG_DATABASE_NAME}
       PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
       SERVER_URL: ${SERVER_URL}
       PUBLIC_DOMAIN_URL: ${PUBLIC_DOMAIN_URL:-}
       TRUST_PROXY: ${TRUST_PROXY:-loopback, linklocal, uniquelocal}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
-      DISABLE_DB_MIGRATIONS: "true"
-      DISABLE_CRON_JOBS_REGISTRATION: "true"
+      DISABLE_DB_MIGRATIONS: 'true'
+      DISABLE_CRON_JOBS_REGISTRATION: 'true'
       STORAGE_TYPE: ${STORAGE_TYPE:-local}
       STORAGE_S3_REGION: ${STORAGE_S3_REGION:-}
       STORAGE_S3_NAME: ${STORAGE_S3_NAME:-}
@@ -90,14 +92,19 @@ services:
   redis:
     image: redis:7
     restart: always
-    command: ["--maxmemory-policy", "noeviction"]
+    command: ['--maxmemory-policy', 'noeviction']
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - supabase_network
 
-  networks:
-    supabase_network:
-      external: true
-      name: supabase_network
+volumes:
+  server-local-data:
+
+networks:
+  supabase_network:
+    external: true
+    name: ${SUPABASE_DOCKER_NETWORK:-supabase_network}

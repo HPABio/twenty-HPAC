@@ -4,6 +4,9 @@
 #   Stop:               docker compose down
 #   Destroy:            docker compose -f docker-compose.yml -f ./dev/docker-compose.dev.yml down -v --remove-orphans
 #   Reset everything:  ./reset.sh
+#
+# Required env: POSTGRES_PASSWORD, POSTGRES_PORT (see .env.supabase.stack.example).
+# Pass an env file, e.g. `docker compose --env-file .env.supabase.local -f ... up`.
 
 name: supabase
 
@@ -31,7 +34,7 @@ services:
       - supabase_network
     environment:
       STUDIO_PG_META_URL: http://meta:8080
-      POSTGRES_PASSWORD: hostingerPW2026??
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
       DEFAULT_ORGANIZATION_NAME: ${STUDIO_DEFAULT_ORGANIZATION}
       DEFAULT_PROJECT_NAME: ${STUDIO_DEFAULT_PROJECT}
@@ -187,7 +190,7 @@ services:
     networks:
       - supabase_network
     environment:
-      PGRST_DB_URI: postgres://authenticator:hostingerPW2026??@db:54322/postgres
+      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/postgres
       PGRST_DB_SCHEMAS: ${PGRST_DB_SCHEMAS}
       PGRST_DB_ANON_ROLE: anon
       PGRST_JWT_SECRET: ${JWT_SECRET}
@@ -232,9 +235,9 @@ services:
     environment:
       PORT: 54321
       DB_HOST: db
-      DB_PORT: 54322
+      DB_PORT: ${POSTGRES_PORT}
       DB_USER: supabase_admin
-      DB_PASSWORD: hostingerPW2026??
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_NAME: postgres
       DB_AFTER_CONNECT_QUERY: 'SET search_path TO _realtime'
       DB_ENC_KEY: supabaserealtime
@@ -281,9 +284,9 @@ services:
     environment:
       ANON_KEY: ${ANON_KEY}
       SERVICE_KEY: ${SERVICE_ROLE_KEY}
-      POSTGREST_URL: http://rest:54322
+      POSTGREST_URL: http://rest:${POSTGRES_PORT}
       PGRST_JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: postgres://supabase_storage_admin:hostingerPW2026??@db:54322/postgres
+      DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/postgres
       FILE_SIZE_LIMIT: 52428800
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
@@ -358,7 +361,7 @@ services:
       SUPABASE_URL: http://kong:8000
       SUPABASE_ANON_KEY: ${ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
-      SUPABASE_DB_URL: postgresql://postgres:hostingerPW2026??@db:54322/postgres
+      SUPABASE_DB_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/postgres
       # TODO: Allow configuring VERIFY_JWT per function. This PR might help: https://github.com/supabase/cli/pull/786
       VERIFY_JWT: "${FUNCTIONS_VERIFY_JWT}"
     command:
@@ -404,8 +407,8 @@ services:
       DB_USERNAME: supabase_admin
       DB_DATABASE: _supabase
       DB_HOSTNAME: db
-      DB_PORT: 54322
-      DB_PASSWORD: hostingerPW2026??
+      DB_PORT: ${POSTGRES_PORT}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_SCHEMA: _analytics
       LOGFLARE_API_KEY: ${LOGFLARE_API_KEY}
       LOGFLARE_SINGLE_TENANT: true
@@ -413,7 +416,7 @@ services:
       LOGFLARE_MIN_CLUSTER_SIZE: 1
 
       # Comment variables to use Big Query backend for analytics
-      POSTGRES_BACKEND_URL: postgresql://supabase_admin:hostingerPW2026??@db:54322/_supabase
+      POSTGRES_BACKEND_URL: postgresql://supabase_admin:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/_supabase
       POSTGRES_BACKEND_SCHEMA: _analytics
       LOGFLARE_FEATURE_FLAG_OVERRIDE: multibackend=true
       # Uncomment to use Big Query backend for analytics
@@ -548,10 +551,10 @@ services:
       - supabase_network
     environment:
       PORT: 54320
-      POSTGRES_PORT: 54322
+      POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_DB: _supabase
-      POSTGRES_PASSWORD: hostingerPW2026??
-      DATABASE_URL: ecto://supabase_admin:hostingerPW2026??@db:54322/_supabase
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_URL: ecto://supabase_admin:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/_supabase
       CLUSTER_POSTGRES: true
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
       VAULT_ENC_KEY: ${VAULT_ENC_KEY}

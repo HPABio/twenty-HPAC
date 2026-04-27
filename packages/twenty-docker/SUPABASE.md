@@ -74,8 +74,15 @@ docker compose \
 ```
 
 Set `SUPABASE_DOCKER_NETWORK` to the Docker network used by your Supabase
-compose project, and point `PG_DATABASE_URL` at the Supabase Postgres service on
-that network, for example `postgresql://postgres:password@db:5432/postgres`.
+compose project. Twenty reads `PG_DATABASE_USER`, `PG_DATABASE_PASSWORD`,
+`PG_DATABASE_HOST`, `PG_DATABASE_PORT`, and `PG_DATABASE_NAME` from
+`.env.supabase.production` to build `PG_DATABASE_URL` (see the example file).
+Use the same Postgres port your Supabase `db` container exposes on that network
+(for example `5432` or `54322`, depending on your stack).
+
+For `docker-compose.supabase-setup.yml`, set `POSTGRES_PASSWORD` and
+`POSTGRES_PORT` (see `.env.supabase.stack.example`).
+
 Find the network with `docker network ls`; self-hosted Supabase networks often
 look like `supabase_network_<project-name>`.
 

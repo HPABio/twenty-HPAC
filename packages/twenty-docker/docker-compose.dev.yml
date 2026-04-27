@@ -2,6 +2,8 @@
 # Use this when developing locally against the source code.
 #
 # Usage:
+#   docker compose -f docker-compose.dev.yml --env-file .env up -d
+#   (optional: defaults match local dev if you omit --env-file)
 #   docker compose -f docker-compose.dev.yml up -d
 #   docker compose -f docker-compose.dev.yml down       # stop
 #   docker compose -f docker-compose.dev.yml down -v    # stop + wipe data
@@ -14,13 +16,14 @@ services:
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '${PG_DATABASE_PORT:-5432}:5432'
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: default
+      POSTGRES_USER: ${PG_DATABASE_USER:-postgres}
+      POSTGRES_PASSWORD: ${PG_DATABASE_PASSWORD:-postgres}
+      POSTGRES_DB: ${PG_DATABASE_NAME:-default}
     healthcheck:
-      test: pg_isready -U postgres -h localhost -d postgres
+      test:
+        ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -h localhost -d postgres']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -29,10 +32,10 @@ services:
   redis:
     image: redis:7
     ports:
-      - "6379:6379"
-    command: ["--maxmemory-policy", "noeviction"]
+      - '${REDIS_PORT:-6379}:6379'
+    command: ['--maxmemory-policy', 'noeviction']
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 10
