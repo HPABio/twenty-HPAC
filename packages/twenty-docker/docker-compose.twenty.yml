@@ -9,7 +9,7 @@ services:
       - "3000:3000"
     environment:
       NODE_PORT: 3000
-      PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/default
+      PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-twenty}
       SERVER_URL: ${SERVER_URL}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       DISABLE_DB_MIGRATIONS: ${DISABLE_DB_MIGRATIONS}
@@ -44,11 +44,14 @@ services:
       # EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
       # EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
 
+      PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
+
     depends_on:
-      db:
-        condition: service_healthy
       redis:
         condition: service_healthy
+    networks:
+      - twenty-internal
+      - supabase_external
     healthcheck:
       test: curl --fail http://localhost:3000/healthz
       interval: 5s
@@ -62,7 +65,7 @@ services:
       - server-local-data:/app/packages/twenty-server/.local-storage
     command: ["yarn", "worker:prod"]
     environment:
-      PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/default
+      PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-twenty}
       SERVER_URL: ${SERVER_URL}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       DISABLE_DB_MIGRATIONS: "true" # it already runs on the server
@@ -97,11 +100,14 @@ services:
       # EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
       # EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
 
+      PG_SSL_ALLOW_SELF_SIGNED: ${PG_SSL_ALLOW_SELF_SIGNED:-false}
+
     depends_on:
-      db:
-        condition: service_healthy
       server:
         condition: service_healthy
+    networks:
+      - twenty-internal
+      - supabase_external
     restart: always
 
   # db:
@@ -130,13 +136,16 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - twenty-internal
 
 volumes:
   db-data:
   server-local-data:
 
-
 networks:
-  supabase-supabase-rtrci8:
+  twenty-internal:
+    driver: bridge
+  supabase_external:
     external: true
-    name: supabase-supabase-rtrci8
+    name: ${SUPABASE_DOCKER_NETWORK:-supabase-supabase-rtrci8}
