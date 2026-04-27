@@ -3,6 +3,8 @@
 # section into the Supabase compose file.
 
 networks:
-  default:
-    name: ${SUPABASE_DOCKER_NETWORK:?Set SUPABASE_DOCKER_NETWORK to a stable shared Docker network name}
+  supabase_network:
+    name: supabase_network
     driver: bridge
+
+
