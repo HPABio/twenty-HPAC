@@ -479,7 +479,10 @@ services:
     restart: unless-stopped
     volumes:
       - ${DOCKER_SOCKET_LOCATION}:/var/run/docker.sock:ro,z
-      - ./supabase/volumes/logs/vector.yml:/etc/vector/vector.yml:ro,z
+      # Mount the logs directory, not vector.yml as a single file. Docker can
+      # create a *directory* named vector.yml on the host if the file was
+      # missing on first bind, which breaks Vector with "Is a directory".
+      - ./supabase/volumes/logs:/etc/vector-config:ro,z
     healthcheck:
       test:
         [
@@ -502,7 +505,7 @@ services:
     command:
       [
         "--config",
-        "/etc/vector/vector.yml"
+        "/etc/vector-config/vector.yml"
       ]
     security_opt:
       - "label=disable"
