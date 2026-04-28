@@ -9,11 +9,11 @@ services:
     ports:
       - "${TWENTY_HOST_PORT:-3080}:3080"
     environment:
-      NODE_PORT: "3000"
+      NODE_PORT: "3080"
       # Prefer PG_DATABASE_URL when set (e.g. URL-encoded password); else build from parts.
       # Default DB name postgres matches typical self-hosted Supabase; override for dedicated twenty DB.
       PG_DATABASE_URL: ${PG_DATABASE_URL:-postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}}
-      SERVER_URL: ${SERVER_URL:-http://localhost:3000}
+      SERVER_URL: ${SERVER_URL:-http://localhost:3080}
       REDIS_URL: ${REDIS_URL:-redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD for internal Redis}@redis:6379}
       DISABLE_DB_MIGRATIONS: ${DISABLE_DB_MIGRATIONS:-}
       DISABLE_CRON_JOBS_REGISTRATION: ${DISABLE_CRON_JOBS_REGISTRATION:-}
@@ -58,7 +58,7 @@ services:
       - twenty-internal
       - supabase-supabase-rtrci8
     healthcheck:
-      test: curl --fail http://localhost:3000/healthz
+      test: curl --fail http://localhost:3080/healthz
       interval: 5s
       timeout: 5s
       retries: 20
