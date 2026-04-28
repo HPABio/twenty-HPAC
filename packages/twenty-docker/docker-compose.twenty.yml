@@ -7,7 +7,7 @@ services:
       - server-local-data:/app/packages/twenty-server/.local-storage
     # Publish host:${TWENTY_HOST_PORT}; app always listens inside the container on NODE_PORT 3000.
     ports:
-      - "${TWENTY_HOST_PORT:-3000}:3000"
+      - "${TWENTY_HOST_PORT:-3080}:3080"
     environment:
       NODE_PORT: "3000"
       # Prefer PG_DATABASE_URL when set (e.g. URL-encoded password); else build from parts.
