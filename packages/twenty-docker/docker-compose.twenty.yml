@@ -5,19 +5,23 @@ services:
     image: twentycrm/twenty:${TAG:-latest}
     volumes:
       - server-local-data:/app/packages/twenty-server/.local-storage
-    # Publish host:${TWENTY_HOST_PORT}; app always listens inside the container on NODE_PORT 3000.
+    # Publish host:${TWENTY_HOST_PORT} to container NODE_PORT (same defaults: 3080:3080).
     ports:
-      - "${TWENTY_HOST_PORT:-3080}:3080"
+      - "${TWENTY_HOST_PORT:-3080}:${NODE_PORT:-3080}"
     environment:
-      NODE_PORT: "3080"
+      NODE_PORT: ${NODE_PORT:-3080}
       # Prefer PG_DATABASE_URL when set (e.g. URL-encoded password); else build from parts.
       # Default DB name postgres matches typical self-hosted Supabase; override for dedicated twenty DB.
       PG_DATABASE_URL: ${PG_DATABASE_URL:-postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}}
       SERVER_URL: ${SERVER_URL:-http://localhost:3080}
+      # Same public origin as SERVER_URL when unset (avoids empty FRONTEND_URL breaking URL helpers).
+      FRONTEND_URL: ${FRONTEND_URL:-${SERVER_URL:-http://localhost:3080}}
+      PUBLIC_DOMAIN_URL: ${PUBLIC_DOMAIN_URL:-${SERVER_URL:-http://localhost:3080}}
       REDIS_URL: ${REDIS_URL:-redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD for internal Redis}@redis:6379}
       DISABLE_DB_MIGRATIONS: ${DISABLE_DB_MIGRATIONS:-}
       DISABLE_CRON_JOBS_REGISTRATION: ${DISABLE_CRON_JOBS_REGISTRATION:-}
 
+      # TLS often terminates at one reverse proxy; TRUST_PROXY=1 honors X-Forwarded-Proto/Host.
       TRUST_PROXY: ${TRUST_PROXY:-loopback, linklocal, uniquelocal}
 
       STORAGE_TYPE: ${STORAGE_TYPE:-local}
@@ -58,7 +62,9 @@ services:
       - twenty-internal
       - supabase-supabase-rtrci8
     healthcheck:
-      test: curl --fail http://localhost:3080/healthz
+      test:
+        - CMD-SHELL
+        - curl --fail http://127.0.0.1:$$NODE_PORT/healthz
       interval: 5s
       timeout: 5s
       retries: 20
@@ -71,7 +77,9 @@ services:
     command: ["yarn", "worker:prod"]
     environment:
       PG_DATABASE_URL: ${PG_DATABASE_URL:-postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}}
-      SERVER_URL: ${SERVER_URL:-http://localhost:3000}
+      SERVER_URL: ${SERVER_URL:-http://localhost:3080}
+      FRONTEND_URL: ${FRONTEND_URL:-${SERVER_URL:-http://localhost:3080}}
+      PUBLIC_DOMAIN_URL: ${PUBLIC_DOMAIN_URL:-${SERVER_URL:-http://localhost:3080}}
       REDIS_URL: ${REDIS_URL:-redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD for internal Redis}@redis:6379}
       DISABLE_DB_MIGRATIONS: "true" # it already runs on the server
       DISABLE_CRON_JOBS_REGISTRATION: "true" # it already runs on the server

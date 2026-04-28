@@ -534,3 +534,7 @@ services:
 
 volumes:
   db-config:
+
+networks:
+  default:
+    name: ${SUPABASE_DOCKER_NETWORK:-supabase-supabase-rtrci8}
