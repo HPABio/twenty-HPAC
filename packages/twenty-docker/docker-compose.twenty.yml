@@ -5,17 +5,15 @@ services:
     image: twentycrm/twenty:${TAG:-latest}
     volumes:
       - server-local-data:/app/packages/twenty-server/.local-storage
-    # Host Publish: avoids clashing with Supabase Studio (`STUDIO_PORT`, often 3000) on same VM.
-    # Traefik / Dokploy routers that talk to this service on the overlay network must use the
-    # container listen port (`NODE_PORT`, 3000), not TWENTY_HOST_PORT.
+    # Publish host:${TWENTY_HOST_PORT}; app always listens inside the container on NODE_PORT 3000.
     ports:
-      - "${TWENTY_HOST_PORT:-3080}:3080"
+      - "${TWENTY_HOST_PORT:-3000}:3000"
     environment:
-      NODE_PORT: ${TWENTY_HOST_PORT:-3080}
+      NODE_PORT: "3000"
       # Prefer PG_DATABASE_URL when set (e.g. URL-encoded password); else build from parts.
       # Default DB name postgres matches typical self-hosted Supabase; override for dedicated twenty DB.
       PG_DATABASE_URL: ${PG_DATABASE_URL:-postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}}
-      SERVER_URL: ${SERVER_URL:-http://localhost:${TWENTY_HOST_PORT:-3080}}
+      SERVER_URL: ${SERVER_URL:-http://localhost:3000}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       DISABLE_DB_MIGRATIONS: ${DISABLE_DB_MIGRATIONS:-}
       DISABLE_CRON_JOBS_REGISTRATION: ${DISABLE_CRON_JOBS_REGISTRATION:-}
@@ -57,9 +55,10 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - supabase-supabase-rtrci8
+      - twenty-internal
+      - supabase_external
     healthcheck:
-      test: curl --fail http://localhost:${TWENTY_HOST_PORT:-3080}/healthz
+      test: curl --fail http://localhost:3000/healthz
       interval: 5s
       timeout: 5s
       retries: 20
@@ -72,7 +71,7 @@ services:
     command: ["yarn", "worker:prod"]
     environment:
       PG_DATABASE_URL: ${PG_DATABASE_URL:-postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}}
-      SERVER_URL: ${SERVER_URL:-http://localhost:3080}
+      SERVER_URL: ${SERVER_URL:-http://localhost:3000}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       DISABLE_DB_MIGRATIONS: "true" # it already runs on the server
       DISABLE_CRON_JOBS_REGISTRATION: "true" # it already runs on the server
@@ -113,7 +112,8 @@ services:
       server:
         condition: service_healthy
     networks:
-      - supabase-supabase-rtrci8
+      - twenty-internal
+      - supabase_external
     restart: always
 
   # db:
@@ -131,7 +131,7 @@ services:
   #     retries: 10
   #   restart: always
   #   networks:
-  #     - supabase-supabase-rtrci8
+  #     - supabase_external
 
   redis:
     image: redis
@@ -143,7 +143,7 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - supabase-supabase-rtrci8
+      - twenty-internal
 
 volumes:
   db-data:
@@ -152,6 +152,6 @@ volumes:
 networks:
   twenty-internal:
     driver: bridge
-  supabase-supabase-rtrci8:
+  supabase_external:
     external: true
-    name: supabase-supabase-rtrci8
+    name: ${SUPABASE_DOCKER_NETWORK:-supabase-supabase-rtrci8}
