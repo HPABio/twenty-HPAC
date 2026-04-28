@@ -56,7 +56,7 @@ services:
         condition: service_healthy
     networks:
       - twenty-internal
-      - supabase_external
+      - supabase-supabase-rtrci8
     healthcheck:
       test: curl --fail http://localhost:3000/healthz
       interval: 5s
@@ -112,6 +112,7 @@ services:
       server:
         condition: service_healthy
     networks:
+      - twenty-internal
       - supabase-supabase-rtrci8
     restart: always
 
@@ -151,6 +152,7 @@ services:
       retries: 10
     networks:
       - twenty-internal
+      - supabase-supabase-rtrci8
 
 volumes:
   db-data:
