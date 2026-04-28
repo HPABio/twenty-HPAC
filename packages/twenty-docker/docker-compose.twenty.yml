@@ -14,7 +14,7 @@ services:
       # Default DB name postgres matches typical self-hosted Supabase; override for dedicated twenty DB.
       PG_DATABASE_URL: ${PG_DATABASE_URL:-postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}}
       SERVER_URL: ${SERVER_URL:-http://localhost:3000}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      REDIS_URL: ${REDIS_URL:-redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD for internal Redis}@redis:6379}
       DISABLE_DB_MIGRATIONS: ${DISABLE_DB_MIGRATIONS:-}
       DISABLE_CRON_JOBS_REGISTRATION: ${DISABLE_CRON_JOBS_REGISTRATION:-}
 
@@ -72,7 +72,7 @@ services:
     environment:
       PG_DATABASE_URL: ${PG_DATABASE_URL:-postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/${PG_DATABASE_NAME:-postgres}}
       SERVER_URL: ${SERVER_URL:-http://localhost:3000}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      REDIS_URL: ${REDIS_URL:-redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD for internal Redis}@redis:6379}
       DISABLE_DB_MIGRATIONS: "true" # it already runs on the server
       DISABLE_CRON_JOBS_REGISTRATION: "true" # it already runs on the server
 
@@ -112,8 +112,7 @@ services:
       server:
         condition: service_healthy
     networks:
-      - twenty-internal
-      - supabase_external
+      - supabase-supabase-rtrci8
     restart: always
 
   # db:
@@ -134,11 +133,19 @@ services:
   #     - supabase_external
 
   redis:
-    image: redis
+    image: redis:7-alpine
     restart: always
-    command: ["--maxmemory-policy", "noeviction"]
+    command:
+      - redis-server
+      - '--maxmemory-policy'
+      - 'noeviction'
+      - '--requirepass'
+      - '${REDIS_PASSWORD:?Set REDIS_PASSWORD for internal Redis}'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test:
+        - CMD-SHELL
+        - >-
+          redis-cli -a "${REDIS_PASSWORD:?Set REDIS_PASSWORD for internal Redis}" ping | grep -q PONG
       interval: 5s
       timeout: 5s
       retries: 10
@@ -152,6 +159,6 @@ volumes:
 networks:
   twenty-internal:
     driver: bridge
-  supabase_external:
+  supabase-supabase-rtrci8:
     external: true
     name: ${SUPABASE_DOCKER_NETWORK:-supabase-supabase-rtrci8}
